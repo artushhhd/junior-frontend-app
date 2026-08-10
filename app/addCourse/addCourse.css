@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+.form-container {
+    @apply w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-md border border-gray-100;
+}
+
+.form-title {
+    @apply text-2xl font-bold text-gray-800 mb-6 text-center;
+}
+
+.form-group {
+    @apply flex flex-col gap-1 mb-4;
+}
+
+.form-label {
+    @apply text-sm font-medium text-gray-700;
+}
+
+.form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400;
+}
+
+.form-file-input {
+    @apply w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer;
+}
+
+.form-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 resize-none;
+}
+
+.form-grid {
+    @apply grid grid-cols-2 gap-4 mb-4;
+}
+
+.form-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900;
+}
+
+.form-submit-btn {
+    @apply w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200 shadow-sm;
+}
