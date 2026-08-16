@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+
+.admin-container {
+    @apply max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen;
+}
+
+.admin-header {
+    @apply flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 pb-5 border-b border-gray-200;
+}
+
+.admin-title {
+    @apply text-3xl font-bold text-gray-900 tracking-tight;
+}
+
+.tab-btn {
+    @apply px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm;
+}
+
+.tab-btn-active {
+    @apply bg-blue-600 text-white shadow-blue-100;
+}
+
+.tab-btn-inactive {
+    @apply bg-white border border-gray-200 text-gray-600 hover:bg-gray-50;
+}
+
+.admin-table-wrapper {
+    @apply overflow-hidden bg-white rounded-xl shadow-sm border border-gray-200;
+}
+
+.admin-table {
+    @apply w-full border-collapse text-left text-sm text-gray-500;
+}
+
+.admin-th {
+    @apply bg-gray-50 px-6 py-4 font-semibold text-gray-700 text-xs uppercase tracking-wider;
+}
+
+.admin-tr {
+    @apply border-b border-gray-100 hover:bg-gray-50/70 transition-colors;
+}
+
+.admin-td {
+    @apply px-6 py-4 text-gray-600 whitespace-nowrap;
+}
+
+.status-tag {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.status-active {
+    @apply bg-green-50 text-green-700 border border-green-200;
+}
+
+.status-pending {
+    @apply bg-amber-50 text-amber-700 border border-amber-200;
+}
+
+.btn-action {
+    @apply px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm transition-all duration-150;
+}
