@@ -1,7 +1,12 @@
 'use client';
 
+<<<<<<< HEAD
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+=======
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+>>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 

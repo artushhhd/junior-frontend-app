@@ -1,16 +1,25 @@
 'use client';
 
+<<<<<<< HEAD
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const PUBLIC_ROUTES = ['/', '/login', '/register'];
+=======
+import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+>>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
 export default function ClientLayoutHelper({ children }) {
     const router = useRouter();
     const pathname = usePathname();
     
     const [user, setUser] = useState({ mounted: false, loggedIn: false, role: null });
+<<<<<<< HEAD
     const isPublic = PUBLIC_ROUTES.includes(pathname);
+=======
+    const isPublic = ['/', '/login', '/register'].includes(pathname);
+>>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -35,6 +44,7 @@ export default function ClientLayoutHelper({ children }) {
         .then(result => {
             if (result.success) {
                 const userData = result.data.user;
+<<<<<<< HEAD
                 const role = userData.role ? userData.role.toLowerCase().trim() : '';
                 
                 setUser({ mounted: true, loggedIn: true, role });
@@ -42,6 +52,9 @@ export default function ClientLayoutHelper({ children }) {
                 if (pathname.startsWith('/admin') && !isAdmin) {
                     router.push('/dashboard'); 
                 }
+=======
+                setUser({ mounted: true, loggedIn: true, role: userData.role });
+>>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
             }
         })
         .catch(() => {
@@ -49,6 +62,7 @@ export default function ClientLayoutHelper({ children }) {
             setUser({ mounted: true, loggedIn: false, role: null });
             if (!isPublic) router.push('/login');
         });
+<<<<<<< HEAD
     }, [pathname, router]);
     if (!user.mounted) {
         return (
@@ -59,6 +73,14 @@ export default function ClientLayoutHelper({ children }) {
     }
 
     const showSettings = user.role !== 'user' && user.role !== '';
+=======
+    }, [pathname, isPublic, router]);
+
+    if (!user.mounted) return null;
+
+    const currentRoleLower = user.role ? user.role.toLowerCase().trim() : '';
+    const showSettings = currentRoleLower !== 'user' && currentRoleLower !== '';
+>>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
