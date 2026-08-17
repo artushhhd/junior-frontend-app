@@ -1,25 +1,16 @@
 'use client';
-
-<<<<<<< HEAD
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const PUBLIC_ROUTES = ['/', '/login', '/register'];
-=======
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
 export default function ClientLayoutHelper({ children }) {
     const router = useRouter();
     const pathname = usePathname();
-    
+
     const [user, setUser] = useState({ mounted: false, loggedIn: false, role: null });
-<<<<<<< HEAD
+
     const isPublic = PUBLIC_ROUTES.includes(pathname);
-=======
-    const isPublic = ['/', '/login', '/register'].includes(pathname);
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -44,17 +35,14 @@ export default function ClientLayoutHelper({ children }) {
         .then(result => {
             if (result.success) {
                 const userData = result.data.user;
-<<<<<<< HEAD
                 const role = userData.role ? userData.role.toLowerCase().trim() : '';
+
+                setUser({ mounted: true, loggedIn: true, role: userData.role });
                 
-                setUser({ mounted: true, loggedIn: true, role });
                 const isAdmin = role !== 'user' && role !== '';
                 if (pathname.startsWith('/admin') && !isAdmin) {
                     router.push('/dashboard'); 
                 }
-=======
-                setUser({ mounted: true, loggedIn: true, role: userData.role });
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
             }
         })
         .catch(() => {
@@ -62,8 +50,8 @@ export default function ClientLayoutHelper({ children }) {
             setUser({ mounted: true, loggedIn: false, role: null });
             if (!isPublic) router.push('/login');
         });
-<<<<<<< HEAD
-    }, [pathname, router]);
+    }, [pathname, isPublic, router]);
+
     if (!user.mounted) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-500">
@@ -72,15 +60,8 @@ export default function ClientLayoutHelper({ children }) {
         );
     }
 
-    const showSettings = user.role !== 'user' && user.role !== '';
-=======
-    }, [pathname, isPublic, router]);
-
-    if (!user.mounted) return null;
-
     const currentRoleLower = user.role ? user.role.toLowerCase().trim() : '';
     const showSettings = currentRoleLower !== 'user' && currentRoleLower !== '';
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
@@ -92,7 +73,7 @@ export default function ClientLayoutHelper({ children }) {
                     >
                         DASHBOARD
                     </div>
-                    
+
                     <nav className="flex h-full items-center gap-5">
                         <button onClick={() => router.push('/Course')} className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white max-sm:px-2">
                             Shop
@@ -100,7 +81,7 @@ export default function ClientLayoutHelper({ children }) {
                         <button onClick={() => router.push('/profile')} className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white max-sm:px-2">
                             Profile
                         </button>
-                        
+
                         {showSettings && (
                             <button onClick={() => router.push('/admin')} className="cursor-pointer rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-all hover:bg-indigo-500">
                                 Settings

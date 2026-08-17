@@ -1,12 +1,7 @@
 'use client';
 
-<<<<<<< HEAD
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-=======
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 import './addCourse.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
@@ -27,51 +22,35 @@ export default function AddCourseForm() {
         const formData = new FormData();
 
         Object.entries({ ...form, slug, price: parseFloat(form.price) || 0 }).forEach(([k, v]) => formData.append(k, v));
-<<<<<<< HEAD
+        
         if (image) {
             formData.append('image', image);
         }
-=======
-        if (image) formData.append('image', image);
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
 
         try {
             const res = await fetch(`${API_URL}/api/courses`, {
                 method: 'POST',
-<<<<<<< HEAD
                 headers: { 
                     'Authorization': `Bearer ${token}`, 
                     'Accept': 'application/json' 
                 },
-=======
-                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
                 body: formData
             });
 
             if (res.ok) {
-<<<<<<< HEAD
                 alert('Course created successfully!');
                 router.push('/Course');
-=======
-                alert('Course created!');
-                router.push('/shop');
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
                 setForm({ title: '', description: '', price: '', status: 'draft' });
                 setImage(null);
                 e.target.reset();
             } else {
                 const err = await res.json().catch(() => ({}));
-<<<<<<< HEAD
                 if (err.errors) {
                     const errorMessages = Object.values(err.errors).flat().join('\n');
                     alert(errorMessages);
                 } else {
                     alert(err.message || 'Error creating course');
                 }
-=======
-                alert(err.message || 'Error creating course');
->>>>>>> cebc24a3c4fa7a0a1e05caca260ee28e01a99992
             }
         } catch (err) {
             console.error(err);
