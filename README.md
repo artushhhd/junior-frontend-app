@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Course Platform — Frontend (Next.js)
+ 
+Frontend for a course platform, built with Next.js App Router + React. Talks to the Laravel API here: [Laravel-juniorProject](https://github.com/yourname/Laravel-juniorProject).
+ 
+## Stack
+ 
+- Next.js 16 (App Router), React 19
+- Tailwind CSS 4
+- Plain fetch/axios to hit the API, token stored in `localStorage`
+## What it does
+ 
+- Register / login, with server-side validation errors shown on the form
+- Profile page (view user info, logout)
+- Course list + course detail
+- Create a new course (`addCourse`)
+- Like/unlike a course
+- Admin panel (`/admin`) — moderate courses and users, only useful if your API account has an admin/moderator role
+## Project structure
+ 
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+app/
+├── page.js               # register page (root)
+├── login/                 # login page + form
+├── profile/                # profile page
+├── Course/                  # course list/detail
+├── addCourse/                # create course form
+├── like/                      # like button component
+├── admin/                      # admin dashboard
+├── layout.js                    # root layout
+└── ClientLayoutHelper.jsx        # client-side layout wrapper (nav etc.)
+```
+ 
+Each page is a folder with `page.js` (the route) plus a `*.jsx` component and its own `*.css` file.
+ 
+## Connecting to the backend
+ 
+The API base URL comes from an env variable:
+ 
+```
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+```
+ 
+Endpoints used: `/api/login`, `/api/register`, `/api/profile`, `/api/logout`, `/api/courses`, `/api/courses/{id}/like`, `/api/admin/...`.
+ 
+## Running locally
+ 
+```bash
+npm install
+cp .env.example .env.local   # set NEXT_PUBLIC_API_URL
+npm run dev
+```
+ 
+App runs on `http://localhost:3000`. Needs the Laravel backend running too ([Laravel-juniorProject](https://github.com/yourname/Laravel-juniorProject)).
