@@ -1,6 +1,6 @@
 # Course Platform — Frontend (Next.js)
  
-Frontend for a course platform, built with Next.js App Router + React. Talks to the Laravel API here: [Laravel-juniorProject](https://github.com/yourname/Laravel-juniorProject).
+Frontend for a course platform, built with Next.js App Router + React. Talks to the Laravel API here: [Laravel-juniorProject](https://github.com/artushhhd/Laravel-juniorProject).
  
 ## Stack
  
