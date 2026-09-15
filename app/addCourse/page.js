@@ -1,9 +1,9 @@
 import AddCourseForm from './addCourse';
 
+export const metadata = {
+  title: 'Add Course',
+};
+
 export default function AddCoursePage() {
-    return (
-        <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
-            <AddCourseForm />
-        </div>
-    );
+  return <AddCourseForm />;
 }

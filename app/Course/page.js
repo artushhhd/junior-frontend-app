@@ -1,57 +1,54 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { api } from '../../lib/api';
+import { useAuth } from '../../lib/auth';
 import CourseCard from './Course';
 import './course.css';
 
 export default function CoursesPage() {
     const [courses, setCourses] = useState([]);
-    const [user, setUser] = useState(null);
     const [search, setSearch] = useState('');
+    const { user } = useAuth();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const headers = { 'Accept': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
-
-        fetch('http://127.0.0.1:8000/api/courses', { headers })
-            .then(res => res.json())
-            .then(json => setCourses(json.data || []))
-            .catch(console.error);
-
-        if (token) {
-            fetch('http://127.0.0.1:8000/api/user', { headers })
-                .then(res => res.ok && res.json())
-                .then(data => data && setUser(data))
-                .catch(console.error);
+    const loadCourses = useCallback(async () => {
+        try {
+            const res = await api.get('courses');
+            setCourses(res.data?.data ?? res.data ?? []);
+        } catch (err) {
+            console.error(err);
         }
     }, []);
 
+    useEffect(() => { loadCourses(); }, [loadCourses]);
+
     const handleLike = async (id) => {
-        if (!user) return alert('Sign in first!');
+        if (!user) return alert('Sign in first');
 
-        setCourses(prev => prev.map(c => c.id === id ? {
-            ...c,
-            is_liked: !c.is_liked,
-            likes_count: !c.is_liked ? (c.likes_count || 0) + 1 : Math.max(0, (c.likes_count || 0) - 1)
-        } : c));
+        setCourses(prev => prev.map(c => c.id === id
+            ? { ...c, is_liked: !c.is_liked, likes_count: c.is_liked ? c.likes_count - 1 : (c.likes_count || 0) + 1 }
+            : c
+        ));
 
-        await fetch(`http://127.0.0.1:8000/api/courses/${id}/like`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Accept': 'application/json' }
-        }).catch(console.error);
+        try {
+            await api.post(`courses/${id}/like`);
+        } catch {
+            loadCourses();
+        }
     };
 
     const handleDelete = async (id) => {
         if (!confirm('Delete this course?')) return;
-        setCourses(prev => prev.filter(c => c.id !== id));
-        await fetch(`http://127.0.0.1:8000/api/courses/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Accept': 'application/json' }
-        }).catch(console.error);
+        try {
+            await api.delete(`courses/${id}`);
+            setCourses(prev => prev.filter(c => c.id !== id));
+        } catch (err) {
+            alert(err.message);
+        }
     };
 
-    const filtered = courses.filter(c => 
-        c.title.toLowerCase().includes(search.toLowerCase()) || 
+    const filtered = courses.filter(c =>
+        c.title.toLowerCase().includes(search.toLowerCase()) ||
         c.description?.toLowerCase().includes(search.toLowerCase())
     );
 

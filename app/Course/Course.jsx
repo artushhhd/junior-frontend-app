@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { api, mediaUrl } from '../../lib/api';
 import '../Course/course.css';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://127.0.0.1:8000';
 
 export default function CourseCard({ course, onDelete, currentUser, onLike }) {
     const [showComments, setShowComments] = useState(false);
@@ -15,10 +14,7 @@ export default function CourseCard({ course, onDelete, currentUser, onLike }) {
         setComments(course?.comments || []);
     }, [course?.comments]);
 
-    const isSeller = currentUser && (
-        Number(currentUser.id) === Number(course?.user_id) || 
-        Number(currentUser.id) === Number(course?.author?.id)
-    );
+    const isSeller = currentUser && Number(currentUser.id) === Number(course?.user_id);
 
     const sendComment = async (e) => {
         e.preventDefault();
@@ -26,27 +22,11 @@ export default function CourseCard({ course, onDelete, currentUser, onLike }) {
 
         setSending(true);
         try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_BASE}/api/courses/${course.id}/comment`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ content: text })
-            });
-
-            const json = await res.json();
-
-            if (res.ok && json.success) {
-                setComments(prev => [json.data, ...prev]);
-                setText('');
-            } else {
-                console.error('Failed to post comment:', json.message || res.statusText);
-            }
+            const res = await api.post(`courses/${course.id}/comment`, { content: text });
+            setComments(prev => [res.data, ...prev]);
+            setText('');
         } catch (err) {
-            console.error('Network error while posting comment:', err);
+            console.error(err);
         } finally {
             setSending(false);
         }
@@ -55,30 +35,30 @@ export default function CourseCard({ course, onDelete, currentUser, onLike }) {
     return (
         <div className="course-card">
             <div className="course-image-wrapper">
-                <img 
-                    src={course?.image ? `${API_BASE}/storage/${course.image}` : '/placeholder-course.png'} 
-                    alt={course?.title || 'Course'} 
-                    className="course-image" 
-                    loading="lazy" 
+                <img
+                    src={mediaUrl(course?.image)}
+                    alt={course?.title || 'Course'}
+                    className="course-image"
+                    loading="lazy"
                 />
                 <span className={`status-badge ${course?.status || 'draft'}`}>
                     {course?.status || 'draft'}
                 </span>
             </div>
-            
+
             <div className="course-content">
                 <h3 className="course-title">{course?.title}</h3>
                 <span className="course-author">Author: {course?.author?.name || 'Unknown'}</span>
                 <p className="course-description">{course?.description}</p>
-                
+
                 <div className="course-footer">
                     <span className="course-price">
                         {parseFloat(course?.price) > 0 ? `$${course.price}` : 'Free'}
                     </span>
-                    
+
                     <div className="course-actions">
-                        <button 
-                            className={`like-btn ${course?.is_liked ? 'liked' : ''}`} 
+                        <button
+                            className={`like-btn ${course?.is_liked ? 'liked' : ''}`}
                             onClick={() => onLike?.(course.id)}
                             type="button"
                         >
@@ -86,8 +66,8 @@ export default function CourseCard({ course, onDelete, currentUser, onLike }) {
                             <span className="like-count">{course?.likes_count || 0}</span>
                         </button>
 
-                        <button 
-                            className="course-btn" 
+                        <button
+                            className="course-btn"
                             onClick={() => setShowComments(prev => !prev)}
                             type="button"
                         >
@@ -95,11 +75,10 @@ export default function CourseCard({ course, onDelete, currentUser, onLike }) {
                         </button>
 
                         {isSeller && (
-                            <button 
-                                className="delete-btn" 
+                            <button
+                                className="delete-btn"
                                 onClick={() => onDelete?.(course.id)}
                                 type="button"
-                                title="Delete Course"
                             >
                                 ✕
                             </button>
@@ -118,9 +97,9 @@ export default function CourseCard({ course, onDelete, currentUser, onLike }) {
                                     onChange={e => setText(e.target.value)}
                                     className="flex-grow px-3 py-1 text-xs border rounded-xl outline-none bg-gray-50 focus:border-blue-500"
                                 />
-                                <button 
-                                    type="submit" 
-                                    disabled={sending || !text.trim()} 
+                                <button
+                                    type="submit"
+                                    disabled={sending || !text.trim()}
                                     className="px-3 py-1 bg-blue-600 text-white text-xs rounded-xl disabled:opacity-50"
                                 >
                                     {sending ? '...' : 'Send'}

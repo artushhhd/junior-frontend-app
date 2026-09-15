@@ -2,59 +2,35 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { api } from '../../lib/api';
 import './addCourse.css';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
 export default function AddCourseForm() {
     const router = useRouter();
     const [form, setForm] = useState({ title: '', description: '', price: '', status: 'draft' });
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
-        if (!token) return alert('Please login first');
+        setLoading(true);
 
         const slug = form.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
         const formData = new FormData();
 
         Object.entries({ ...form, slug, price: parseFloat(form.price) || 0 }).forEach(([k, v]) => formData.append(k, v));
-        
-        if (image) {
-            formData.append('image', image);
-        }
+        if (image) formData.append('image', image);
 
         try {
-            const res = await fetch(`${API_URL}/api/courses`, {
-                method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${token}`, 
-                    'Accept': 'application/json' 
-                },
-                body: formData
-            });
-
-            if (res.ok) {
-                alert('Course created successfully!');
-                router.push('/Course');
-                setForm({ title: '', description: '', price: '', status: 'draft' });
-                setImage(null);
-                e.target.reset();
-            } else {
-                const err = await res.json().catch(() => ({}));
-                if (err.errors) {
-                    const errorMessages = Object.values(err.errors).flat().join('\n');
-                    alert(errorMessages);
-                } else {
-                    alert(err.message || 'Error creating course');
-                }
-            }
+            await api.post('courses', formData, true);
+            router.push('/Course');
         } catch (err) {
-            console.error(err);
-            alert('Network error. Please try again.');
+            const messages = err.data?.errors ? Object.values(err.data.errors).flat().join('\n') : err.message;
+            alert(messages);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -67,8 +43,8 @@ export default function AddCourseForm() {
                     <input type="text" name="title" value={form.title} onChange={handleChange} className="form-input" required />
                 </div>
                 <div className="form-group">
-                    <label className="form-label">Course Cover Image</label>
-                    <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} className="form-file-input" required />
+                    <label className="form-label">Cover Image</label>
+                    <input type="file" accept="image/*" onChange={e => setImage(e.target.files[0])} className="form-file-input" required />
                 </div>
                 <div className="form-group">
                     <label className="form-label">Description</label>
@@ -87,7 +63,9 @@ export default function AddCourseForm() {
                         </select>
                     </div>
                 </div>
-                <button type="submit" className="form-submit-btn">Create Course</button>
+                <button type="submit" disabled={loading} className="form-submit-btn">
+                    {loading ? 'Creating...' : 'Create Course'}
+                </button>
             </form>
         </div>
     );

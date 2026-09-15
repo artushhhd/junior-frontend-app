@@ -1,99 +1,65 @@
 'use client';
+
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useAuth, isStaff } from '../lib/auth';
 
 const PUBLIC_ROUTES = ['/', '/login', '/register'];
 
 export default function ClientLayoutHelper({ children }) {
     const router = useRouter();
     const pathname = usePathname();
-
-    const [user, setUser] = useState({ mounted: false, loggedIn: false, role: null });
+    const { user, loading } = useAuth();
 
     const isPublic = PUBLIC_ROUTES.includes(pathname);
+    const staff = isStaff(user);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        if (loading) return;
 
-        if (!token) {
-            setUser({ mounted: true, loggedIn: false, role: null });
-            if (!isPublic) router.push('/login');
+        if (!user && !isPublic) {
+            router.push('/login');
             return;
         }
 
-        fetch(`${apiUrl}/api/profile`, {
-            headers: { 
-                'Authorization': `Bearer ${token}`, 
-                'Accept': 'application/json' 
-            }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error();
-            return res.json();
-        })
-        .then(result => {
-            if (result.success) {
-                const userData = result.data.user;
-                const role = userData.role ? userData.role.toLowerCase().trim() : '';
+        if (user && !staff && pathname.startsWith('/admin')) {
+            router.push('/Course');
+        }
+    }, [loading, user, staff, pathname, isPublic, router]);
 
-                setUser({ mounted: true, loggedIn: true, role: userData.role });
-                
-                const isAdmin = role !== 'user' && role !== '';
-                if (pathname.startsWith('/admin') && !isAdmin) {
-                    router.push('/dashboard'); 
-                }
-            }
-        })
-        .catch(() => {
-            localStorage.removeItem('token');
-            setUser({ mounted: true, loggedIn: false, role: null });
-            if (!isPublic) router.push('/login');
-        });
-    }, [pathname, isPublic, router]);
-
-    if (!user.mounted) {
+    if (loading && !isPublic) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-500">
-                Loading...
+            <div className="flex min-h-screen items-center justify-center bg-slate-50">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
             </div>
         );
     }
 
-    const currentRoleLower = user.role ? user.role.toLowerCase().trim() : '';
-    const showSettings = currentRoleLower !== 'user' && currentRoleLower !== '';
-
     return (
         <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
-            {user.loggedIn && !isPublic && (
+            {user && !isPublic && (
                 <header className="sticky top-0 z-50 flex h-[60px] items-center justify-between bg-slate-900 px-[5%] text-white">
-                    <div 
-                        className="cursor-pointer text-base font-bold tracking-wider" 
-                        onClick={() => router.push('/dashboard')}
+                    <div
+                        className="cursor-pointer text-base font-bold tracking-wider"
+                        onClick={() => router.push('/Course')}
                     >
                         DASHBOARD
                     </div>
 
                     <nav className="flex h-full items-center gap-5">
-                        <button onClick={() => router.push('/Course')} className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white max-sm:px-2">
-                            Shop
-                        </button>
-                        <button onClick={() => router.push('/profile')} className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white max-sm:px-2">
-                            Profile
-                        </button>
+                        <NavBtn onClick={() => router.push('/Course')}>Shop</NavBtn>
+                        <NavBtn onClick={() => router.push('/addCourse')}>Add Course</NavBtn>
+                        <NavBtn onClick={() => router.push('/like')}>Likes</NavBtn>
+                        <NavBtn onClick={() => router.push('/profile')}>Profile</NavBtn>
 
-                        {showSettings && (
-                            <button onClick={() => router.push('/admin')} className="cursor-pointer rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-all hover:bg-indigo-500">
+                        {staff && (
+                            <button
+                                onClick={() => router.push('/admin')}
+                                className="cursor-pointer rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-all hover:bg-indigo-500"
+                            >
                                 Settings
                             </button>
                         )}
-
-                        <button onClick={() => router.push('/addCourse')} className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white max-sm:px-2">
-                            add Course
-                        </button>
-                        <button onClick={() => router.push('/like')} className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white max-sm:px-2">
-                            Likes
-                        </button>
                     </nav>
                 </header>
             )}
@@ -101,5 +67,16 @@ export default function ClientLayoutHelper({ children }) {
                 {children}
             </main>
         </div>
+    );
+}
+
+function NavBtn({ onClick, children }) {
+    return (
+        <button
+            onClick={onClick}
+            className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white max-sm:px-2"
+        >
+            {children}
+        </button>
     );
 }

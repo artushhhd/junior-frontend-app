@@ -1,15 +1,16 @@
 import LoginForm from './login';
-import './login.css';
+
+export const metadata = {
+  title: 'Login',
+};
 
 export default function LoginPage() {
   return (
-    <div className="auth-wrapper">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h2>Sign in to your account</h2>
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md space-y-8">
+        <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">Sign in</h2>
         <LoginForm />
       </div>
     </div>
   );
-}[]
+}
