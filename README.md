@@ -9,7 +9,7 @@ Backend: [junior-backend-api](https://github.com/artushhhd/junior-backend-api)
 - Next.js 16 — App Router
 - React 19
 - JavaScript
-- Axios
+- Native fetch API client
 - Tailwind CSS 4
 
 ## Features

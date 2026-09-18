@@ -1,4 +1,4 @@
-import RegisterForm from './register';
+import RegisterForm from './register/RegisterForm';
 
 export const metadata = {
   title: 'Register - Course & Blog Platform',

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
-import CourseCard from './Course';
+import CourseCard from './CourseCard';
 import './course.css';
 
 export default function CoursesPage() {

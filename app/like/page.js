@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
-import LikedCourses from './like';
+import LikedCourses from './LikedCourses';
 
 export default function LikesPage() {
     const [courses, setCourses] = useState([]);
