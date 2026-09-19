@@ -1,123 +1,187 @@
 # Course Platform — Frontend
 
-Frontend for a small course platform, built with Next.js App Router and React. It consumes the Laravel REST API and provides authentication, course browsing, course creation, likes, comments, and an admin panel.
+A Next.js 16 frontend for a course platform, connected to a Laravel REST API.
 
-Backend: [junior-backend-api](https://github.com/artushhhd/junior-backend-api)
+**Backend:** [junior-backend-api](https://github.com/artushhhd/junior-backend-api)
+
+## What this project demonstrates
+
+- Next.js App Router
+- React 19
+- JavaScript frontend architecture
+- Integration with a separate Laravel REST API
+- Token-based authentication
+- Protected user flows
+- Course CRUD and interactions
+- Form handling and server validation errors
+- Role-aware administration UI
+- Centralized API client
+- Environment-based backend configuration
+- Responsive UI with Tailwind CSS
 
 ## Tech Stack
 
-- Next.js 16 — App Router
-- React 19
-- JavaScript
-- Native fetch API client
-- Tailwind CSS 4
+| Technology | Usage |
+|---|---|
+| Next.js 16 | React framework / App Router |
+| React 19 | UI |
+| JavaScript | Application code |
+| Tailwind CSS 4 | Styling |
+| Native Fetch API | HTTP client |
+| Laravel Sanctum | Backend authentication |
 
-## Features
+## Core Features
 
 ### Authentication
 
-- User registration and login
-- Server-side validation errors displayed in forms
-- Token-based authentication through the Laravel API
-- Profile page
+- Registration
+- Login
 - Logout
+- Token persistence
+- Profile page
+- Backend validation errors displayed in forms
+- Automatic handling of expired/invalid authentication responses
 
-### Courses
+### Course Platform
 
-- Course list and course details
-- Create a new course
-- Course image upload
+- Browse courses
+- View course details
+- Create courses
+- Upload course images
+- Edit/delete owned courses
 - Like / unlike courses
-- Comments
+- Add comments
+- Connect directly to the Laravel API
 
-### Admin Panel
+### Administration
 
-Available at `/admin` for accounts with the required role from the Laravel API.
+The application includes an `/admin` area for staff users.
+
+The admin interface provides:
 
 - Course moderation
+- Course approval
 - User management
 - Account blocking
+- Administrative actions backed by the Laravel authorization layer
+
+The frontend does not replace backend authorization. The Laravel API remains responsible for deciding whether an administrative request is allowed.
+
+## API Layer
+
+All backend communication is centralized in `lib/api.js`.
+
+It handles:
+
+- API base URL configuration
+- Bearer token attachment
+- JSON requests
+- FormData requests
+- HTTP error handling
+- Automatic token cleanup on `401 Unauthorized`
+- Media URL construction
+
+The API URL is configured through an environment variable rather than hardcoded throughout the application.
+
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
+```
 
 ## Project Structure
 
 ```text
 app/
-├── page.js                  # Registration page
-├── login/                   # Login page
-├── profile/                 # Profile page
-├── Course/                  # Course list and details
-├── addCourse/               # Course creation
-├── like/                    # Like functionality
-├── admin/                   # Admin dashboard
-├── layout.js                # Root layout
-└── ClientLayoutHelper.jsx   # Client-side layout wrapper
+├── page.js                    # Registration
+├── login/                     # Login
+├── profile/                   # User profile
+├── Course/                    # Course UI
+├── addCourse/                 # Course creation
+├── admin/                     # Administration
+├── layout.js                  # Root layout
+└── ClientLayoutHelper.jsx     # Client-side layout handling
 
-lib/                         # Shared frontend utilities
-public/                      # Static assets
+lib/
+├── api.js                     # Central API client
+├── auth.js                    # Authentication state
+└── ...
+
+public/
+└── ...                        # Static assets
 ```
 
-Pages use the Next.js App Router. UI logic is kept in separate JSX components where client-side state or interaction is required.
+The App Router is used for application routing, while interactive UI is isolated into client components where browser state or events are required.
 
-## Backend Connection
+## Backend Contract
 
-The API base URL is configured through an environment variable:
-
-```env
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
-```
-
-The frontend communicates with endpoints such as:
+The frontend consumes endpoints including:
 
 ```text
-/api/login
-/api/register
-/api/profile
-/api/logout
-/api/courses
-/api/courses/{id}/like
-/api/courses/{id}/comment
-/api/admin/...
+POST   /api/register
+POST   /api/login
+GET    /api/profile
+POST   /api/logout
+
+GET    /api/courses
+POST   /api/courses
+PUT    /api/courses/{id}
+DELETE /api/courses/{id}
+
+POST   /api/courses/{id}/like
+POST   /api/courses/{id}/comment
+
+GET    /api/admin/...
 ```
 
-The Laravel backend must be running for authentication and API requests to work.
+See the backend repository for the complete API and authorization rules.
 
-## Running Locally
+## Installation
 
-### 1. Install dependencies
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/artushhhd/junior-frontend-app.git
+cd junior-frontend-app
+```
+
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Configure the API URL
+### 3. Configure the API
 
-Create `.env.local` in the project root:
+Create `.env.local`:
 
 ```env
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
 ```
 
-Change the value if your Laravel API runs on another host or port.
+Make sure the Laravel backend is running.
 
-### 3. Start the development server
+### 4. Start development
 
 ```bash
 npm run dev
 ```
 
-The frontend runs at:
+Open:
 
 ```text
 http://localhost:3000
 ```
 
-Make sure the Laravel backend is running at the same time:
-
-**[junior-backend-api](https://github.com/artushhhd/junior-backend-api)**
-
-## Production Build
+### 5. Production build
 
 ```bash
 npm run build
 npm start
 ```
+
+## Quality Notes
+
+The project keeps the frontend and backend independently deployable. Authentication, API requests and media URL construction are centralized instead of being duplicated across pages.
+
+For a full-stack view of the project, see the backend repository:
+
+**[junior-backend-api](https://github.com/artushhhd/junior-backend-api)**
